@@ -1,4 +1,4 @@
-cd ./deep_metab/Graphormer-RT/graphormer/evaluate/
+cd ./Graphormer-RT/graphormer/evaluate/
 
 python evaluate.py \
     --user-dir ../../graphormer \
