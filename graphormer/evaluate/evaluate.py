@@ -19,6 +19,8 @@ import csv
 from rdkit import Chem
 from rdkit.Chem import Draw
 
+### TO DO -> CUT ALL BUT PRED ###
+
 sys.path.append( path.dirname(   path.dirname( path.abspath(__file__) ) ) )
 from pretrain import load_pretrained_model
 
