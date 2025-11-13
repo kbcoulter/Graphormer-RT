@@ -1,3 +1,6 @@
+### NOTE: THIS SCRIPT IS NOT USED IN deep_metab APPTAINER USE (NOT RUN FROM app_evaluate_HILIC.sh) ###
+### TO EDIT OPTIONS, PLEASE CD: deep_metab/app_evaluate_HILIC.sh ###
+
 python evaluate_HILIC.py \
     --user-dir ../../graphormer \
     --num-workers 32 \

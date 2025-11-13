@@ -1,3 +1,5 @@
+### NOTE: SCRIPT NEEDS TO BE CUT DOWN (NO STDEV), CHANGES MADE: LINE 120-130
+
 import torch
 import numpy as np
 from fairseq import checkpoint_utils, utils, options, tasks
@@ -114,9 +116,17 @@ def eval(args, use_pretrained, checkpoint_path=None, logger=None):
             method = info[:, 1]
             smilesL.extend(sm)
             methodL.extend(method)
-            y = y[:, :].reshape(-1)
-            y_pred.extend(y.detach().cpu())
+
+            # y = y[:, :].reshape(-1) #OLD
+            # y_pred.extend(y.detach().cpu()) # OLD
+            y = y.squeeze(1).reshape(-1)  # NEW
+            y_pred.extend(y.detach().cpu().tolist()) # NEW
             y_true.extend(sample["target"].detach().cpu().reshape(-1)[:y.shape[0]])
+
+            #std = std[:, :].reshape(-1) # OLD
+            #y_pred.extend(y.detach().cpu()) # OLD
+            std = std.squeeze(1).reshape(-1)  # NEW
+            y_pred.extend(y.detach().cpu().tolist()) # NEW
             torch.cuda.empty_cache()
 
         # print(y_pred, "PRED")
@@ -175,14 +185,11 @@ def eval(args, use_pretrained, checkpoint_path=None, logger=None):
                     writer.writerow(["SMILES", "Method", "True RT", "Predicted RT", "Absolute Error"])
                     for row in stack:
                         writer.writerow(row)
-                print("SAVED PREDICTIONS")
+                print("SAVED HILIC PREDICTIONS")
 
             logger.info(f"mae: {mae:.2f}")
             logger.info(f"rmse: {rmse:.2f}")
             logger.info(f"error: {m_error:.2f}")
-
-
-    
 
 def main():
     parser = options.get_training_parser()
@@ -202,7 +209,7 @@ def main():
     elif hasattr(args, "save_dir"):
         for checkpoint_fname in os.listdir(args.save_dir):
             checkpoint_path = Path(args.save_dir) / checkpoint_fname
-            print("hi")
+            # print("hi")
             logger.info(f"evaluating checkpoint file {checkpoint_path}")
             eval(args, False, checkpoint_path, logger)
 

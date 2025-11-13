@@ -1,3 +1,7 @@
+### NOTE: THIS SCRIPT IS NOT USED IN deep_metab APPTAINER USE (NOT RUN FROM app_evaluate_RP.sh) ###
+### TO EDIT OPTIONS, PLEASE CD: deep_metab/app_evaluate_RP.sh ###
+echo "NOTE: THIS SCRIPT IS FUNCTIONING OUTSIDE OF deep_metab/app_evaluate_RP.sh AND EXPECTED HPC WORKFLOW. CONTINUING..." 
+
 cd ./Graphormer-RT/graphormer/evaluate/
 
 python evaluate.py \

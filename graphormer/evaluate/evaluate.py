@@ -1,3 +1,5 @@
+### NOTE: SCRIPT NEEDS TO BE CUT DOWN (NO STDEV), CHANGES MADE: LINE 121-128
+
 import torch
 import numpy as np
 from fairseq import checkpoint_utils, utils, options, tasks
@@ -18,8 +20,6 @@ from tqdm import tqdm
 import csv
 from rdkit import Chem
 from rdkit.Chem import Draw
-
-### TO DO -> CUT ALL BUT PRED ###
 
 sys.path.append( path.dirname(   path.dirname( path.abspath(__file__) ) ) )
 from pretrain import load_pretrained_model
@@ -99,7 +99,6 @@ def eval(args, use_pretrained, checkpoint_path=None, logger=None):
         default_log_format=("tqdm" if not cfg.common.no_progress_bar else "simple")
     )
 
-    # infer
     y_pred = []
     y_true = []
     smilesL = []
@@ -118,17 +117,19 @@ def eval(args, use_pretrained, checkpoint_path=None, logger=None):
             method = info[:, 1]
             smilesL.extend(sm)
             methodL.extend(method)
-            #y = y[:, :].reshape(-1)
-            #std = std[:, :].reshape(-1)
-            #y_pred.extend(y.detach().cpu())
+
+            #y = y[:, :].reshape(-1) # OLD
+            #std = std[:, :].reshape(-1) # OLD
+            #y_pred.extend(y.detach().cpu()) # OLD
             y = y.squeeze(1).reshape(-1)  # NEW
-            std = std.squeeze(1).reshape(-1)  # NEW
             y_pred.extend(y.detach().cpu().tolist()) # NEW
+            y_true.extend(sample["target"].detach().cpu().reshape(-1)[:y.shape[0]])
+            
+            std = std.squeeze(1).reshape(-1)  # NEW
             std = std.detach().cpu()
             std = [s.item() for s in std]
 
             stdL.extend(std)
-            y_true.extend(sample["target"].detach().cpu().reshape(-1)[:y.shape[0]])
             torch.cuda.empty_cache()
 
         y_pred = np.asarray(y_pred, dtype=np.float64) * 1000
@@ -185,7 +186,7 @@ def eval(args, use_pretrained, checkpoint_path=None, logger=None):
                     writer.writerow(["SMILES", "Method", 'True RT', "Predicted RT", 'STD'])
                     for row in stack:
                         writer.writerow(row)
-                print("SAVED PREDICTIONS")
+                print("SAVED RP PREDICTIONS")
 
             logger.info(f"mae: {mae:.2f}")
             logger.info(f"rmse: {rmse:.2f}")
@@ -209,7 +210,7 @@ def main():
     elif hasattr(args, "save_dir"):
         for checkpoint_fname in os.listdir(args.save_dir):
             checkpoint_path = Path(args.save_dir) / checkpoint_fname
-            print("hi")
+            #print("hi")
             logger.info(f"evaluating checkpoint file {checkpoint_path}")
             eval(args, False, checkpoint_path, logger)
 
