@@ -5,7 +5,7 @@ import csv
 from rdkit import Chem
 import torch
 import time
-
+import inspect
 
 from .featurizing_helpers import *
 print("YOURE DEF IN THE RCORRECT FILE")
@@ -312,7 +312,24 @@ class IRSpectraD(DGLDataset):
         self.smiles = []
 
         print("I'm in the right file")
+
         print("RP_LOADER_TRAIN.PY is BEING CALLED")
+        print("--- Call Path Backtrace (from earliest call to most recent) ---")
+        stack = inspect.stack()
+    
+        # We reverse the stack and skip the current frame (which is last after reversal)
+        for frame_info in reversed(stack[1:]):
+            # frame_info is a named tuple.
+            # frame_info.filename: Path to the file
+            # frame_info.lineno: Line number in the file
+            # frame_info.function: Name of the function
+            
+            # Use os.path.basename to just get the filename, not the full path
+            filename = os.path.basename(frame_info.filename)
+            
+            print(f"  -> File: '{filename}', Line: {frame_info.lineno}, Function: {frame_info.function}")
+            
+        print("---------------------------------------------------------------")
 
 
         # x = import_data(r'../../../sample_data/Pretrain_RP_sample.csv') ## sample pretrain
