@@ -5,10 +5,11 @@ import csv
 from rdkit import Chem
 import torch
 import time
-
+import inspect
 
 from .featurizing_helpers import *
-print("YOURE DEF IN THE RCORRECT FILE")
+#print("YOURE DEF IN THE RCORRECT FILE")
+print("Youre in RP_loader_train.py, the CORRECT file")
 
 import itertools
 
@@ -311,15 +312,54 @@ class IRSpectraD(DGLDataset):
         self.labels = []
         self.smiles = []
 
-        print("I'm in the right file")
-        print("RP_LOADER_TRAIN.PY is BEING CALLED")
+        #print("I'm in the right file")
 
+        print("RP_LOADER_TRAIN.PY is BEING CALLED")
+        print("---------------------------------------------------------------")
+        
+        print("--- Call Path Backtrace (from earliest call to most recent) ---")
+
+        stack = inspect.stack()
+    
+        # We reverse the stack and skip the current frame (which is last after reversal)
+        for frame_info in reversed(stack[1:]):
+            # frame_info is a named tuple.
+            # frame_info.filename: Path to the file
+            # frame_info.lineno: Line number in the file
+            # frame_info.function: Name of the function
+            
+            # Use os.path.basename to just get the filename, not the full path
+            filename = os.path.basename(frame_info.filename)
+            
+            print(f"  -> File: '{filename}', Line: {frame_info.lineno}, Function: {frame_info.function}")
+            
+        print("---------------------------------------------------------------")
+
+        data_file_path = os.getenv('RP_DATA_FILE_PATH')
+        metadata_file_path = os.getenv('RP_METADATA_PATH')
+
+        if data_file_path is None:
+            data_file_path = '/data/finetune_0003_RP.csv' # <-- Use the container path
+            print(f"WARNING: RP_DATA_FILE_PATH not set. Defaulting to {data_file_path}")
+        
+        if metadata_file_path is None:
+            metadata_file_path = '/data/RP_metadata.pickle' # <-- Use the container path
+            print(f"WARNING: RP_METADATA_PATH not set. Defaulting to {metadata_file_path}")
+
+        x = import_data(data_file_path)
+        metadata_path = str(metadata_file_path)
+
+        print(f"--- Loading data from: {x}")
+        print(f"--- Loading metadata from: {metadata_path}")
+
+        print("---------------------------------------------------------------")
 
         # x = import_data(r'../../../sample_data/Pretrain_RP_sample.csv') ## sample pretrain
-        x = import_data(r'../../sample_data/finetune_0003_RP.csv') ## sample finetune
+        #x = import_data(r'../../sample_data/finetune_0003_RP.csv') ## sample finetune
         # x = import_data(r'../../../sample_data/HUAN.csv') ## sample finetune
 
-        metadata_path = '../../sample_data/RP_metadata.pickle'
+        #metadata_path = '../../sample_data/RP_metadata.pickle'
+
         with open(metadata_path, 'rb') as handle: 
             self.columndict = pickle.load(handle) 
 
