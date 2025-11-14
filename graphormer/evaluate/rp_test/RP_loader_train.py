@@ -349,6 +349,30 @@ class IRSpectraD(DGLDataset):
         x = import_data(data_file_path)
         metadata_path = str(metadata_file_path)
 
+        # --- Start of Added Debugging ---
+        print(f"[DEBUG] --- Attempting to load data from: {data_file_path}")
+        x = import_data(data_file_path)
+        if x is not None:
+            try:
+                data_len = len(x)
+                print(f"[DEBUG] Data loaded successfully. Type: {type(x)}. Number of rows: {data_len}")
+                if data_len > 0:
+                    # Print first 10 elements of the first row, or fewer if row is shorter
+                    print(f"[DEBUG] First row of data (sample): {x[0][:10]}")
+                else:
+                    print("[DEBUG] Data file loaded, but it's empty.")
+            except TypeError:
+                print(f"[DEBUG] Data loaded, but its type ({type(x)}) doesn't support len().")
+        else:
+            print("[DEBUG] ERROR: Failed to load data. import_data returned None.")
+
+        print(f"[DEBUG] --- Attempting to load metadata from: {metadata_file_path}")
+        print(f"[DEBUG] Type of metadata_file_path variable: {type(metadata_file_path)}")
+        metadata_path = str(metadata_file_path)
+        print(f"[DEBUG] metadata_path variable (after str()): {metadata_path}")
+        print(f"[DEBUG] Type of metadata_path variable: {type(metadata_path)}")
+        # --- End of Added Debugging ---
+
         print(f"--- Loading data from: {x}")
         print(f"--- Loading metadata from: {metadata_path}")
 
@@ -360,8 +384,34 @@ class IRSpectraD(DGLDataset):
 
         #metadata_path = '../../sample_data/RP_metadata.pickle'
 
-        with open(metadata_path, 'rb') as handle: 
-            self.columndict = pickle.load(handle) 
+        print(f"[DEBUG] Opening metadata file: {metadata_path}")
+        try:
+            with open(metadata_path, 'rb') as handle: 
+                self.columndict = pickle.load(handle) 
+            print(f"[DEBUG] Metadata loaded successfully. Type: {type(self.columndict)}.")
+            
+            if isinstance(self.columndict, dict):
+                print(f"[DEBUG] Metadata is a dict with {len(self.columndict)} keys.")
+                try:
+                    first_key = next(iter(self.columndict))
+                    print(f"[DEBUG] First key in metadata dict: {first_key}")
+                    # Print first 10 elements of the value, or fewer if value is shorter
+                    print(f"[DEBUG] Value for first key (sample): {self.columndict[first_key][:10]}")
+                except StopIteration:
+                    print("[DEBUG] Metadata dictionary is empty.")
+            else:
+                print(f"[DEBUG] Warning: Metadata loaded but is not a dictionary (type: {type(self.columndict)}).")
+        
+        except FileNotFoundError:
+            print(f"[DEBUG] ERROR: Metadata file not found at {metadata_path}")
+            return # Can't proceed without metadata
+        except Exception as e:
+            print(f"[DEBUG] ERROR: Failed to load or read metadata pickle: {e}")
+            return # Can't proceed
+        print("---------------------------------------------------------------")
+        
+        # with open(metadata_path, 'rb') as handle: 
+        #     self.columndict = pickle.load(handle) 
 
         # x = import_data(r'/home/cmkstien/Graphormer_RT_2/data/external_benchmarks/0003/1_train.csv') 
 
