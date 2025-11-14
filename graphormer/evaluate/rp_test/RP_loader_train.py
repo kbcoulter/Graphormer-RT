@@ -412,6 +412,8 @@ class IRSpectraD(DGLDataset):
         
         # with open(metadata_path, 'rb') as handle: 
         #     self.columndict = pickle.load(handle) 
+        with open(metadata_path, 'rb') as handle: 
+            self.columndict = pickle.load(handle) 
 
         # x = import_data(r'/home/cmkstien/Graphormer_RT_2/data/external_benchmarks/0003/1_train.csv') 
 
