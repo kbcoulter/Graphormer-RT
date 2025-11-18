@@ -392,12 +392,26 @@ class IRSpectraD(DGLDataset):
             
             if isinstance(self.columndict, dict):
                 print(f"[DEBUG] Metadata is a dict with {len(self.columndict)} keys.")
-                try:
-                    first_key = next(iter(self.columndict))
-                    print(f"[DEBUG] First key in metadata dict: {first_key}")
-                    # Print first 10 elements of the value, or fewer if value is shorter
-                    print(f"[DEBUG] Value for first key (sample): {self.columndict[first_key][:10]}")
-                except StopIteration:
+                # try:
+                #     first_key = next(iter(self.columndict))
+                #     print(f"[DEBUG] First key in metadata dict: {first_key}")
+                #     # Print first 10 elements of the value, or fewer if value is shorter
+                #     print(f"[DEBUG] Value for first key (sample): {self.columndict[first_key][:10]}")
+                # except StopIteration:
+                #     print("[DEBUG] Metadata dictionary is empty.")
+                if self.columndict:
+                    print("[DEBUG] Contents overview:")
+                    for key, value in self.columndict.items():
+                        # Get a printable representation of the value's size
+                        try:
+                            size_repr = f", Length: {len(value)}"
+                        except TypeError:
+                            size_repr = "" # Value is not iterable or doesn't support len()
+                        
+                        # Print the key, the type of the value, and its size/length
+                        print(f"[DEBUG]   Key: '{key}', Value Type: {type(value).__name__}{size_repr}")
+                        print(f"Content: {value}")
+                else:
                     print("[DEBUG] Metadata dictionary is empty.")
             else:
                 print(f"[DEBUG] Warning: Metadata loaded but is not a dictionary (type: {type(self.columndict)}).")
