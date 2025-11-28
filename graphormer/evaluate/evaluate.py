@@ -117,7 +117,8 @@ def eval(args, use_pretrained, checkpoint_path=None, logger=None):
             method = info[:, 1]
             smilesL.extend(sm)
             methodL.extend(method)
-
+            #############################################################
+            # RAISE ISSUE IN RT REPO? 
             #y = y[:, :].reshape(-1) # OLD
             #std = std[:, :].reshape(-1) # OLD
             #y_pred.extend(y.detach().cpu()) # OLD
@@ -131,7 +132,7 @@ def eval(args, use_pretrained, checkpoint_path=None, logger=None):
 
             stdL.extend(std)
             torch.cuda.empty_cache()
-
+            #############################################################
         y_pred = np.asarray(y_pred, dtype=np.float64) * 1000
         y_true = np.asarray(y_true, dtype=np.float64) * 1000
         std = (np.asarray(stdL, dtype=np.float64)) * 1000 
