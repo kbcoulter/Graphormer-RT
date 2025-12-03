@@ -1,5 +1,11 @@
 ### NOTE: THIS SCRIPT IS NOT USED IN deep_metab APPTAINER USE (NOT RUN FROM app_evaluate_RP.sh) ###
 ### TO EDIT OPTIONS, PLEASE CD: deep_metab/app_evaluate_RP.sh ###
+
+echo "This script is functioning outside of the expected deep_metab workflow."
+echo "Please: cd ../../.. and evaluate via app_evaluate_RP.sh"
+echo "Exiting..."
+exit
+
 echo "NOTE: THIS SCRIPT IS FUNCTIONING OUTSIDE OF deep_metab/app_evaluate_RP.sh AND EXPECTED HPC WORKFLOW. CONTINUING..." 
 
 cd ./Graphormer-RT/graphormer/evaluate/
