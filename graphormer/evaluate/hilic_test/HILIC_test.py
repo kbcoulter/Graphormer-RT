@@ -5,6 +5,7 @@ import csv
 from rdkit import Chem
 import torch
 import time
+import inspect
 
 from .featurizing_helpers import *
 print("YOURE DEF IN THE RCORRECT FILE")
@@ -302,11 +303,133 @@ class IRSpectraD(DGLDataset):
         self.labels = []
         self.smiles = []
 
-        print("I'm in the right file")
-        with open('../../sample_data/HILIC_metadata.pickle', 'rb') as handle: 
+        ### NEW ##########################
+        print("HILIC_test.py is BEING CALLED")
+        print("---------------------------------------------------------------")
+        print("--- Call Path Backtrace (from earliest call to most recent) ---")
+
+        stack = inspect.stack()
+    
+        # We reverse the stack and skip the current frame (which is last after reversal)
+        for frame_info in reversed(stack[1:]):
+            # frame_info is a named tuple.
+            # frame_info.filename: Path to the file
+            # frame_info.lineno: Line number in the file
+            # frame_info.function: Name of the function
+            
+            # Use os.path.basename to just get the filename, not the full path
+            filename = os.path.basename(frame_info.filename)
+            
+            print(f"  -> File: '{filename}', Line: {frame_info.lineno}, Function: {frame_info.function}")
+            
+        print("---------------------------------------------------------------")
+
+        data_file_path = os.getenv('HILIC_DATA_FILE_PATH')
+        metadata_file_path = os.getenv('HILIC_METADATA_PATH')
+
+        if data_file_path is None:
+            data_file_path = '/sample_data/Finetune_0185_HILIC.csv' # <-- Use the container path
+            print(f"WARNING: HILIC_DATA_FILE_PATH not set. Defaulting to {data_file_path}")
+        
+        if metadata_file_path is None:
+            metadata_file_path = '/sample_data/HILIC_metadata.pickle' # <-- Use the container path
+            print(f"WARNING: HILIC_METADATA_PATH not set. Defaulting to {metadata_file_path}")
+
+        x = import_data(data_file_path)
+        metadata_path = str(metadata_file_path)
+
+        # --- Start of Added Debugging ---
+        print(f"[DEBUG] --- Attempting to load data from: {data_file_path}")
+        x = import_data(data_file_path)
+        if x is not None:
+            try:
+                data_len = len(x)
+                print(f"[DEBUG] Data loaded successfully. Type: {type(x)}. Number of rows: {data_len}")
+                if data_len > 0:
+                    # Print first 10 elements of the first row, or fewer if row is shorter
+                    print(f"[DEBUG] First row of data (sample): {x[0][:10]}")
+                else:
+                    print("[DEBUG] Data file loaded, but it's empty.")
+            except TypeError:
+                print(f"[DEBUG] Data loaded, but its type ({type(x)}) doesn't support len().")
+        else:
+            print("[DEBUG] ERROR: Failed to load data. import_data returned None.")
+
+        print(f"[DEBUG] --- Attempting to load metadata from: {metadata_file_path}")
+        print(f"[DEBUG] Type of metadata_file_path variable: {type(metadata_file_path)}")
+        metadata_path = str(metadata_file_path)
+        print(f"[DEBUG] metadata_path variable (after str()): {metadata_path}")
+        print(f"[DEBUG] Type of metadata_path variable: {type(metadata_path)}")
+        # --- End of Added Debugging ---
+
+        print(f"--- Loading data from: {x}")
+        print(f"--- Loading metadata from: {metadata_path}")
+
+        print("---------------------------------------------------------------")
+
+        # x = import_data(r'../../../sample_data/Pretrain_RP_sample.csv') ## sample pretrain
+        #x = import_data(r'../../sample_data/finetune_0003_RP.csv') ## sample finetune
+        # x = import_data(r'../../../sample_data/HUAN.csv') ## sample finetune
+
+        #metadata_path = '../../sample_data/RP_metadata.pickle'
+
+        print(f"[DEBUG] Opening metadata file: {metadata_path}")
+        try:
+            with open(metadata_path, 'rb') as handle: 
+                self.columndict = pickle.load(handle) 
+            print(f"[DEBUG] Metadata loaded successfully. Type: {type(self.columndict)}.")
+            
+            if isinstance(self.columndict, dict):
+                print(f"[DEBUG] Metadata is a dict with {len(self.columndict)} keys.")
+                # try:
+                #     first_key = next(iter(self.columndict))
+                #     print(f"[DEBUG] First key in metadata dict: {first_key}")
+                #     # Print first 10 elements of the value, or fewer if value is shorter
+                #     print(f"[DEBUG] Value for first key (sample): {self.columndict[first_key][:10]}")
+                # except StopIteration:
+                #     print("[DEBUG] Metadata dictionary is empty.")
+                if self.columndict:
+                    print("[DEBUG] Contents overview:")
+                    for key, value in self.columndict.items():
+                        # Get a printable representation of the value's size
+                        try:
+                            size_repr = f", Length: {len(value)}"
+                        except TypeError:
+                            size_repr = "" # Value is not iterable or doesn't support len()
+                        
+                        # Print the key, the type of the value, and its size/length
+                        print(f"[DEBUG]   Key: '{key}', Value Type: {type(value).__name__}{size_repr}")
+                        print(f"Content: {value}")
+                else:
+                    print("[DEBUG] Metadata dictionary is empty.")
+            else:
+                print(f"[DEBUG] Warning: Metadata loaded but is not a dictionary (type: {type(self.columndict)}).")
+        
+        except FileNotFoundError:
+            print(f"[DEBUG] ERROR: Metadata file not found at {metadata_path}")
+            return # Can't proceed without metadata
+        except Exception as e:
+            print(f"[DEBUG] ERROR: Failed to load or read metadata pickle: {e}")
+            return # Can't proceed
+        print("---------------------------------------------------------------")
+        
+        # with open(metadata_path, 'rb') as handle: 
+        #     self.columndict = pickle.load(handle) 
+        with open(metadata_path, 'rb') as handle: 
             self.columndict = pickle.load(handle) 
 
-        x = import_data(r'../../sample_data/Finetune_0185_HILIC.csv')
+        # x = import_data(r'/home/cmkstien/Graphormer_RT_2/data/external_benchmarks/0003/1_train.csv') 
+
+        keys = list(self.columndict.keys())
+        index_dict = {}
+
+        for j, key in enumerate(keys):
+            index_dict[key] = j
+
+        gnode = True ## Turns off global node
+        ### NEW ##########################
+
+
         count = 0
         for i in tqdm(x):
             sm = str(i[1]).replace("Q", "#") ##
