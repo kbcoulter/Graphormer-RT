@@ -126,8 +126,8 @@ def eval(args, use_pretrained, checkpoint_path=None, logger=None):
 
             #std = std[:, :].reshape(-1) # OLD
             #y_pred.extend(y.detach().cpu()) # OLD
-            std = std.squeeze(1).reshape(-1)  # NEW
-            y_pred.extend(y.detach().cpu().tolist()) # NEW
+           # std = std.squeeze(1).reshape(-1)  # NEW
+            #y_pred.extend(y.detach().cpu().tolist()) # NEW
             torch.cuda.empty_cache()
             #############################################################
         # print(y_pred, "PRED")
