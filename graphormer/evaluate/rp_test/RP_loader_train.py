@@ -9,7 +9,11 @@ import inspect
 
 from .featurizing_helpers import *
 #print("YOURE DEF IN THE RCORRECT FILE")
-print("Youre in RP_loader_train.py, the CORRECT file")
+print("RP_loader_train.py accessed as expected. Continuing...")
+
+###################################################################
+### Note the HILIC counterpart of this script is HILIC_test.py. ###
+###################################################################
 
 import itertools
 
@@ -439,7 +443,6 @@ class IRSpectraD(DGLDataset):
 
         gnode = True ## Turns off global node
         count = 0
- 
         for i in tqdm(x):
         
             sm = str(i[1]).replace("Q", "#") ## Hashtags break some of our preprocessing scripts so we replace them with Qs to make life easier 

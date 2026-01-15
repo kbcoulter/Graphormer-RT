@@ -8,7 +8,12 @@ import time
 import inspect
 
 from .featurizing_helpers import *
-print("YOURE DEF IN THE RCORRECT FILE")
+#print("YOURE DEF IN THE RCORRECT FILE")
+print("HILIC_test.py accessed as expected. Continuing...")
+
+#####################################################################
+### Note the RP counterpart of this script is RP_loader_train.py. ###
+#####################################################################
 
 import itertools
 

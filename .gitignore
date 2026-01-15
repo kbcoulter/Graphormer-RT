@@ -1,1 +1,3 @@
 /home/cmkstien/Graphormer_RT/examples/property_prediction/wandb/
+*.pyc
+
