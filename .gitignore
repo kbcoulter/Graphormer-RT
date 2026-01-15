@@ -1,3 +1,13 @@
 /home/cmkstien/Graphormer_RT/examples/property_prediction/wandb/
+__pycache__/
 *.pyc
+*.pyo
+### THESE ARE IDENTICAL FUNCTIONALLY, THEY JUST WERE CHANGED IN TESTING ###
+fairseq/fairseq/model_parallel/criterions/vocab_parallel_cross_entropy.py
+fairseq/fairseq/tasks/fairseq_task.py
+fairseq/fairseq/tasks/multilingual_translation.py
+fairseq/fairseq/tasks/online_backtranslation.py
+fairseq/fairseq/tasks/translation.py
+
+
 
